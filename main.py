@@ -46,7 +46,7 @@ class Bird(pygame.sprite.Sprite):
         else:
             return self._mask_wingdown
 
-    @@property
+    @property
     def rect(self):
         return Rect(self.x,self.y,Bird.WIDTH,Bird.HEIGHT)
 
@@ -56,6 +56,58 @@ class Bird(pygame.sprite.Sprite):
             return self._mask_wingup
         else:
             return self._mask_wingdown
+
+class PipePair(pygame.sprite.Sprite):
+    #obstacle for the bird
+    WIDTH = 80
+    PIECE_HEIGHT = 32
+    ADD_INTERVAL = 3000
+
+    def __init__(self, pipe_end_img,pipe_body_img):
+        self.x = float(WIN_WIDTH-1)
+        self.score_counted = False
+        self.image = pygame((PipePair.WIDTH.WIN_HEIGHT),SRCALPHA)
+        self.image.convert()
+        self.image.fill((0,0,0))
+
+        total_pipe_pieces = int((WIN_HEIGHT-
+                                 3*WIN_HEIGHT-
+                                 3*PipePair.PIECE_HEIGHT)/
+                                 PipePair.PIECE_HEIGHT
+
+                                 )
+        self.bottom_pieces = randint(1,total_pipe_pieces)
+        self.top_pieces = randint(1,total_pipe_pieces)
+
+        for i in range(1,self.bottom_pieces+1):
+            piece_pos = (0,WIN_HEIGHT-i*PipePair.PIECE_HEIGHT)
+
+            self.image.blit(pipe_body_img,piece_pos)
+
+
+        bottom_pipe_end_y = WIN_HEIGHT-self.bottom_height_px
+        bottom_end_pipe_pos = (0,bottom_pipe_end_y - PipePair.PIECE_HEIGHT)
+
+        self.image.blit(pipe_end_img, bottom_end_pipe_pos)
+
+        for i in range(self.top_pieces):
+            self.image.blit(pipe_body_img,(0,i*PipePair*PIECE_HEIGHT))
+
+        total_pipe_end_x = self.top_height_px
+        self.image.blit(pipe_end_img,(0,total_pipe_end_x))
+
+        self.top_pieces += 1
+        self.bottom_pieces += 1
+
+        # detect collision
+
+        self.mask = pygame.mask.from_surface(self.image)
+
+
+
+
+
+
 
 
 
