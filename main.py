@@ -91,7 +91,7 @@ class PipePair(pygame.sprite.Sprite):
         self.image.blit(pipe_end_img, bottom_end_pipe_pos)
 
         for i in range(self.top_pieces):
-            self.image.blit(pipe_body_img,(0,i*PipePair*PIECE_HEIGHT))
+            self.image.blit(pipe_body_img,(0,i*PipePair.PIECE_HEIGHT))
 
         total_pipe_end_x = self.top_height_px
         self.image.blit(pipe_end_img,(0,total_pipe_end_x))
@@ -127,14 +127,6 @@ class PipePair(pygame.sprite.Sprite):
 
 
 
-
-
-
-
-
-
-
-
 def load_images():
 
     def load_image(img_file_name):
@@ -165,3 +157,48 @@ def main():
     score_font = pygame.font.SysFont(None, 32, bold=True)
 
     images = load_images()
+
+    bird = Bird(50,int(WIN_HEIGHT/2-Bird.HEIGHT/2),2,(images['bird-wingup'],images['bird-wingdown']))
+
+    pipes = deque()
+
+    frame_clock = 0
+
+    done = pause = False
+
+    while not done:
+        clock.tick(FPS)
+
+        for e in pygame.event.get():
+            if e.type == QUIT or (e.type == KEYUP and e.type == K_ESCAPE):
+                dont = True
+                break
+            elif e.type == KEYUP and e.key in (K_PAUSE, K_p):
+                paused = not paused
+            elif e.type == MOUSEBUTTONUP or (e.type == KEYUP and e.type in (K_UP,K_RETURN,K_SPACE)):
+                bird.msec_to_climb = Bird.CLIMB_DURATION
+
+        if paused:
+            continue
+
+        pipe_collision = any(p.collide_with(bird)for p in pipes)
+
+        if pipe_collision or 0>=bird.y or bird.y >= WIN_HEIGHT-Bird.HEIGHT:
+            done = True
+
+        for x in (0,WIN_WIDTH/2):
+            display_surface.blit(images['background'],(x,0))
+
+        bird.update()
+        display_surface.blit(bird.image,bird.rect)
+
+        pygame.display.flip()
+        frame_clock += 1
+
+    pygame.quit()
+
+    if __name__ == '__main__':
+        main()
+
+
+
