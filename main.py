@@ -42,9 +42,9 @@ class Bird(pygame.sprite.Sprite):
     @property
     def image(self):
         if pygame.time.get_ticks() % 500 >= 250:
-            return self._mask_wingup
+            return self._img_wingup
         else:
-            return self._mask_wingdown
+            return self._img_wingdown
 
     @property
     def rect(self):
@@ -66,12 +66,12 @@ class PipePair(pygame.sprite.Sprite):
     def __init__(self, pipe_end_img,pipe_body_img):
         self.x = float(WIN_WIDTH-1)
         self.score_counted = False
-        self.image = pygame((PipePair.WIDTH.WIN_HEIGHT),SRCALPHA)
+        self.image = pygame.Surface((PipePair.WIDTH, WIN_HEIGHT),SRCALPHA)
         self.image.convert()
         self.image.fill((0,0,0))
 
         total_pipe_pieces = int((WIN_HEIGHT-
-                                 3*WIN_HEIGHT-
+                                 3*Bird.HEIGHT-
                                  3*PipePair.PIECE_HEIGHT)/
                                  PipePair.PIECE_HEIGHT
 
@@ -122,7 +122,7 @@ class PipePair(pygame.sprite.Sprite):
     def update(self, delta_frames = 1):
         self.x -= ANIMATION_SPEED*frames_to_msec(delta_frames)
 
-    def collides_width(self,bird):
+    def collides_with(self,bird):
         return pygame.sprite.collide_mask(self, bird)
 
 
@@ -131,7 +131,7 @@ def load_images():
 
     def load_image(img_file_name):
 
-        file_name = os.path.join('.', 'images', img_file_name)
+        file_name = os.path.join('/Users/richardhernandez/PycharmProjects/flappyBird/images/', img_file_name)
         img = pygame.image.load(file_name)
         img.convert()
         return img
@@ -165,7 +165,7 @@ def main():
 
     frame_clock = 0
 
-    done = pause = False
+    done = paused = False
 
     while not done:
         clock.tick(FPS)
@@ -186,7 +186,7 @@ def main():
         if paused:
             continue
 
-        pipe_collision = any(p.collide_with(bird)for p in pipes)
+        pipe_collision = any(p.collides_with(bird)for p in pipes)
 
         if pipe_collision or 0>=bird.y or bird.y >= WIN_HEIGHT-Bird.HEIGHT:
             done = True
@@ -202,16 +202,17 @@ def main():
             display_surface.blit(p.image,p.rect)
 
         bird.update()
-        display_surface.blit(bird.image,bird.rect)
+        display_surface.blit(bird.image, bird.rect)
 
         # update score
         for p in pipes:
             if p.x + PipePair.WIDTH < bird.x and not p.score_counted == True:
-                score_surface = score_font.render(str(score),True,(255,255,255))
+                score += 1
+                p.score_counted = True
 
+        score_surface = score_font.render(str(score),True,(255,255,255))
         score_x = WIN_WIDTH/2 - score_surface.get_width()/2
-
-        display_surface.blit(score_surface,(score_x.PIECE_HEIGHT))
+        display_surface.blit(score_surface,(score_x, PipePair.PIECE_HEIGHT))
 
 
         pygame.display.flip()
@@ -221,6 +222,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
