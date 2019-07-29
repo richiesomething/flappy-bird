@@ -169,6 +169,10 @@ def main():
     while not done:
         clock.tick(FPS)
 
+        if not (paused or frame_clock%msec_to_frames(PipePair.ADD_INTERVAL)):
+            pp = PipePair(images['pipe-end'],images['pipe-body'])
+            pipes.append(pp)
+
         for e in pygame.event.get():
             if e.type == QUIT or (e.type == KEYUP and e.type == K_ESCAPE):
                 dont = True
@@ -189,6 +193,13 @@ def main():
         for x in (0,WIN_WIDTH/2):
             display_surface.blit(images['background'],(x,0))
 
+        while pipes and not pipes[0].visible:
+            pipes.popleft()
+
+        for p in pipes:
+            p.update()
+            display_surface.blit(p.image,p.rect)
+
         bird.update()
         display_surface.blit(bird.image,bird.rect)
 
@@ -197,8 +208,8 @@ def main():
 
     pygame.quit()
 
-    if __name__ == '__main__':
-        main()
+if __name__ == '__main__':
+    main()
 
 
 
