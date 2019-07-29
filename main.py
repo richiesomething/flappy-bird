@@ -103,6 +103,30 @@ class PipePair(pygame.sprite.Sprite):
 
         self.mask = pygame.mask.from_surface(self.image)
 
+    @property
+    def top_height_px(self):
+        return self.top_pieces*PipePair.PIECE_HEIGHT
+
+    @property
+    def bottom_height_px(self):
+        return self.bottom_pieces*PipePair.PIECE_HEIGHT
+
+    @property
+    def visible(self):
+        return -PipePair.WIDTH < self.x < WIN_WIDTH
+
+    @property
+    def rect(self):
+        return Rect(self.x,0,PipePair.WIDTH,PipePair.PIECE_HEIGHT)
+
+    def update(self, delta_frames = 1):
+        self.x -= ANIMATION_SPEED*frames_to_msec(delta_frames)
+
+    def collides_width(self,bird):
+        return pygame.sprite.collide_mask(self, bird)
+
+
+
 
 
 
