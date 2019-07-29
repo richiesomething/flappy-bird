@@ -1,0 +1,5 @@
+#!/Users/richardhernandez/PycharmProjects/flappyBird/venv/bin/python
+from cx_Freeze.setupwriter import main
+
+main()
+
