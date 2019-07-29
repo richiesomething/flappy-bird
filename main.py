@@ -161,6 +161,7 @@ def main():
     bird = Bird(50,int(WIN_HEIGHT/2-Bird.HEIGHT/2),2,(images['bird-wingup'],images['bird-wingdown']))
 
     pipes = deque()
+    score = 0
 
     frame_clock = 0
 
@@ -202,6 +203,16 @@ def main():
 
         bird.update()
         display_surface.blit(bird.image,bird.rect)
+
+        # update score
+        for p in pipes:
+            if p.x + PipePair.WIDTH < bird.x and not p.score_counted == True:
+                score_surface = score_font.render(str(score),True,(255,255,255))
+
+        score_x = WIN_WIDTH/2 - score_surface.get_width()/2
+
+        display_surface.blit(score_surface,(score_x.PIECE_HEIGHT))
+
 
         pygame.display.flip()
         frame_clock += 1
